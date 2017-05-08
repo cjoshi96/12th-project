@@ -1,0 +1,1183 @@
+#include<string.h>
+#include<iostream.h>
+#include<conio.h>
+#include<graphics.h>
+#include<dos.h>
+#include<bios.h>
+#include<process.h>
+#include<math.h>
+#include<stdlib.h>
+#include<time.h>
+#include<fstream.h>
+#include<stdio.h>
+
+int i=0,j=0,ff2=0,tt1=0,c12=0,key=0,pos=0,xmax=0,ymax=0,midx=0,midy=0,k=0,lx=0,ly=0,flag2=-1,ff=0,ff1=0,l=0,r=0,c=0,maxx=0,maxy=0,px=0,py=0,ck=0,ck2=0,nn=0,ch1=0,ch2=0;
+int a1=0,b1=0,c1=0,d1=0,e1=0,f1=0,g1=0,h1=0,i1=0,j1=0,k1=0,l1=0,m1=0,n1=0,o1=0,p1=0,q1=0,r1=0,s1=0,t1=0,u1=0,v1=0,w1=0,x1=0,y1=0,z1=0;
+int a11=0,b11=0,c11=0,d11=0,e11=0,f11=0,score=0,max=0,tt=0,bullets=0,shoot1=30,g11=0,h11=0,i11=0,j11=0;
+char choice,name;
+char str[5];
+float dist=0,dist1a=0,dist1b=0,dist1c=0,dist1d=0,dist1e=0,dist1f=0,dist1g=0,dist1h=0;
+float dist1i=0,dist1j=0,dist1k=0,dist1l=0,dist1m=0,dist1n=0,dist1o=0,dist1p=0,dist1q=0,dist1r=0,dist1s=0,dist1t=0,dist1u=0;
+float dist1v=0,dist1w=0,dist1x=0,dist1y=0,dist1z=0,dist11a=0,dist11b=0,dist11c=0,dist11d=0,dist11e=0,dist11f=0,dist11g=0,dist11h=0,dist11i=0,dist11j=0;
+
+int flag;
+void game();
+void timer1();
+void high_score();
+
+int ttime=0,ttime1=0,ttime2=0,t2=0;
+struct times
+{ int hr;
+  int min;
+  int sec;
+  } timer;
+
+
+class score
+{
+ int f1;
+ public:
+ char f2[100];
+ score()
+ {
+    f1=0;
+    strcpy(f2,"WARRIOR PLAYER");
+ }
+ int score_counter(int xxx);
+
+void display(int pos)
+ {
+    gotoxy(35,7);
+    cout<<"NAME"<<"\t\t"<<"SCORE";
+    gotoxy(36,10+pos);
+    puts(f2);
+    gotoxy(38,10+pos);
+    cout<<"\t\t  "<<f1;
+ }
+}s,sp,sp1;
+
+int score::score_counter(int xxx)
+{
+   f1+=xxx;
+}
+
+void score_write()
+{
+   gotoxy(35,10);
+   cout<<"ENTER NAME: ";
+   gets(s.f2);
+   ofstream of1("SCORE1.txt",ios::app);
+   of1.write((char*)&s,sizeof(s));
+   of1.close();
+}
+
+
+void back()
+{
+for(int i=0;i<500;i++)
+{
+	 setcolor(1);
+	 int a=random(640);
+	 int b=random(470);
+	 moveto(a,b);
+	 settextstyle(0,HORIZ_DIR,1);
+	 outtext(".");
+ }
+ for(int i1=0;i1<250;i1++)
+{
+	 setcolor(3);
+	 int a=random(640);
+	 int b=random(470);
+	 moveto(a,b);
+	 settextstyle(0,HORIZ_DIR,1);
+	 outtext(".");
+ }
+}
+
+
+
+void explode(ex,ey)
+{
+ setcolor(4);
+ setfillstyle(1,4);
+ pieslice(ex,ey,0,360,15);
+
+
+ for(int i=0;i<1;i++)
+ {
+ setcolor(14);
+ ellipse(ex,ey,0,360,20+i,8);
+ delay(60);
+ }
+ for(i=0;i<1;i++)
+ {
+ setcolor(12);
+ ellipse(ex,ey,0,360,30+i,8);
+ delay(50);
+ }
+ setcolor(4);
+ setfillstyle(1,4);
+ pieslice(ex,ey,0,360,15);
+
+ //FOR DISAPPEARING IT
+ setcolor(0);
+ setfillstyle(1,0);
+ pieslice(ex,ey,0,360,15);
+
+ for(i=0;i<11;i++)
+ {
+ setcolor(0);
+ ellipse(ex,ey,0,360,20+i,8);
+ }
+}
+
+void plane(int h,int col1)
+{
+   int midy=0;
+   midy=getmaxy()/2;
+
+   setcolor(col1);
+   line(h-2,midy+195,h-20,midy+210); //left wing
+   line(h-20,midy+210,h-5,midy+210);
+
+   line(h+2,midy+195,h+20,midy+210); //right wing
+   line(h+20,midy+210,h+5,midy+210);
+
+   //MAIN PLANE
+   //Top
+   line(h+5,midy+210,h,midy+180);
+   line(h-5,midy+210,h,midy+180);
+
+   //Bottom
+   setfillstyle(SOLID_FILL,GREEN);
+   line(h-10,midy+220,h,midy+200);
+   line(h,midy+200,h+10,midy+220);
+   line(h,midy+215,h-10,midy+220);
+   line(h+10,midy+220,h,midy+215);
+   //floodfill(h-1,midy+205,getmaxcolor());
+}
+
+
+void enemy()
+{
+ int k1=0,l1=0;
+ for(int i=0;i<3;i++)
+    {
+     k1=0;
+     for(int j=0;j<9;j++)
+      {
+       setfillstyle(1,4);
+       bar(12+k1,20+l1,32+k1,30+l1);  //upper body
+       setfillstyle(1,2);
+       bar(10+k1,25+l1,34+k1,35+l1);   //lower body
+       setfillstyle(1,4);
+       bar(12+k1,30+l1,16+k1,40+l1);  //left leg
+       bar(27+k1,30+l1,31+k1,40+l1);  //right leg
+       k1+=50;
+      }
+     l1+=50;
+    }
+}
+
+//color coding for each enemy
+void kilen(int k2,int l2,int col)
+{
+       setfillstyle(1,col);
+       bar(12+k2,20+l2,32+k2,30+l2);
+       bar(10+k2,25+l2,34+k2,35+l2);
+       bar(12+k2,30+l2,16+k2,40+l2);
+       bar(27+k2,30+l2,32+k2,40+l2);
+ }
+
+
+//making the enemy disappear
+void killing(int ck1,int xx,int yy)
+{
+ int i=0,k1=0,j=0,l1=0,dist=0;
+
+ midx=getmaxx()/2;
+ midy=getmaxy()/2;
+
+if(ck1>=0)
+{
+  for(i=0;i<3;i++)
+  {
+   k1=0;
+    for(j=0;j<7;j++)
+     {
+      if(i==xx && j==yy)
+       {kilen(k1,l1,0);}
+      k1+=50;
+     }
+   l1+=50;
+  }
+ }
+}
+
+
+//Move the plane Right
+int plane_right (int c1, int r1)
+{
+  plane(c1,15);
+  plane(c1-10,0);
+  plane(c1,15);
+  plane(0,0);
+
+  plane(r1,15);
+  plane(r1-10,0);
+  plane(r1,15);
+}
+
+//Move the plane Left
+int plane_left(int c2, int l1)
+{
+  plane(c2,15);
+  plane(c2+10,0);
+  plane(c2,15);
+  plane(0,0);
+
+  plane(l1,15);
+  plane(l1+10,0);
+  plane(l1,15);
+
+}
+
+//Shoot the bullets from Plane
+void shoot(int c3,int midy1)
+{
+     for(int k=0;k<450;k+=5)
+      {
+       setfillstyle(1,15);
+       bar(c3-1,midy1+190-k,c3+1,midy1+182-k);
+       delay(3);
+       setfillstyle(1,0);
+       bar(c3-1,midy1+190-k,c3+1,midy1+180-k);
+       setfillstyle(1,15);
+       px=c3-1;
+       py=midy+190-k;
+       lx=c3+1;
+       ly=midy+182-k;
+       plane(c3,15);
+       plane(c3-10,0);
+       plane(c3,15);
+
+       dist11h=sqrt(pow(565-px,2)+pow(135-py,2));     //(3,12)
+       dist11g=sqrt(pow(515-px,2)+pow(135-py,2));     //(3,11)
+       dist11f=sqrt(pow(465-px,2)+pow(135-py,2));     //(3,10)
+       dist11e=sqrt(pow(415-px,2)+pow(135-py,2));     //(3,9)
+       dist11d=sqrt(pow(365-px,2)+pow(135-py,2));     //(3,8)
+       dist1a=sqrt(pow(315-px,2)+pow(135-py,2));      //(3,7)
+       dist1b=sqrt(pow(265-px,2)+pow(135-py,2));      //(3,6)
+       dist1c=sqrt(pow(215-px,2)+pow(135-py,2));      //(3,5)
+       dist1d=sqrt(pow(165-px,2)+pow(135-py,2));      //(3,4)
+       dist1e=sqrt(pow(115-px,2)+pow(135-py,2));      //(3,3)
+       dist1f=sqrt(pow(65-px,2)+pow(135-py,2));       //(3,2)
+       dist1g=sqrt(pow(15-px,2)+pow(135-py,2));       //(3,1)
+
+       dist11i=sqrt(pow(565-px,2)+pow(85-py,2));      //(3,12)
+       dist11c=sqrt(pow(515-px,2)+pow(85-py,2));      //(2,11)
+       dist11b=sqrt(pow(465-px,2)+pow(85-py,2));      //(2,10)
+       dist11a=sqrt(pow(415-px,2)+pow(85-py,2));      //(2,9)
+       dist1z=sqrt(pow(365-px,2)+pow(85-py,2));       //(2,8)
+       dist1h=sqrt(pow(315-px,2)+pow(85-py,2));       //(2,7)
+       dist1i=sqrt(pow(265-px,2)+pow(85-py,2));       //(2,6)
+       dist1j=sqrt(pow(215-px,2)+pow(85-py,2));       //(2,5)
+       dist1k=sqrt(pow(165-px,2)+pow(85-py,2));       //(2,4)
+       dist1l=sqrt(pow(115-px,2)+pow(85-py,2));       //(2,3)
+       dist1m=sqrt(pow(65-px,2)+pow(85-py,2));        //(2,2)
+       dist1n=sqrt(pow(15-px,2)+pow(85-py,2));        //(2,1)
+
+       dist11j=sqrt(pow(565-px,2)+pow(35-py,2));      //(3,12)
+       dist1y=sqrt(pow(515-px,2)+pow(35-py,2));       //(1,11)
+       dist1x=sqrt(pow(465-px,2)+pow(35-py,2));       //(1,10)
+       dist1w=sqrt(pow(415-px,2)+pow(35-py,2));       //(1,9)
+       dist1v=sqrt(pow(365-px,2)+pow(35-py,2));       //(1,8)
+       dist1o=sqrt(pow(315-px,2)+pow(35-py,2));       //(1,7)
+       dist1p=sqrt(pow(265-px,2)+pow(35-py,2));       //(1,6)
+       dist1q=sqrt(pow(215-px,2)+pow(35-py,2));       //(1,5)
+       dist1r=sqrt(pow(165-px,2)+pow(35-py,2));       //(1,4)
+       dist1s=sqrt(pow(115-px,2)+pow(35-py,2));       //(1,3)
+       dist1t=sqrt(pow(65-px,2)+pow(35-py,2));        //(1,2)
+       dist1u=sqrt(pow(15-px,2)+pow(35-py,2));        //(1,1)
+
+
+      if(dist1a>=0 && dist1a<=16)
+       {
+	if(a1==0)
+	 {a1++;
+	  bullets++;
+	  s.score_counter(a1);
+	  killing(a1,2,6);
+	  explode(319,135);
+
+	  break;}
+	else
+	 {killing(a1,2,6);
+	 continue;} }
+
+      if(dist1b>=0 && dist1b<=16)
+       {
+	if(b1==0)
+	 {b1++;
+	  bullets++;
+	  s.score_counter(b1);
+	  killing(b1,2,5);
+	  explode(269,135);
+	  break;}
+	else
+	 {killing(b1,2,5);
+	 continue;} }
+
+
+      if(dist1c>=0 && dist1c<=16)
+       {
+	if(c1==0)
+	 {c1++;
+	  bullets++;
+	  s.score_counter(c1);
+	  killing(c1,2,4);
+	  explode(219,135);
+	  break;}
+	else
+	 {killing(c1,2,4);
+	 continue;} }
+
+       if(dist1d>=0 && dist1d<=16)
+       {
+	if(d1==0)
+	 {d1++;
+	  bullets++;
+	  s.score_counter(d1);
+	  killing(d1,2,3);
+	  explode(169,135);
+	  break;}
+	else
+	 {killing(d1,2,3);
+	 continue;} }
+
+      if(dist1e>=0 && dist1e<=16)
+       {
+	if(e1==0)
+	 {e1++;
+	  bullets++;
+	  s.score_counter(e1);
+	  killing(e1,2,2);
+	  explode(119,135);
+	  break;}
+	else
+	 {killing(e1,2,2);
+	 continue;} }
+
+      if(dist1f>=0 && dist1f<=16)
+       {
+	if(f1==0)
+	 {f1++;
+	  bullets++;
+	  s.score_counter(f1);
+	  killing(f1,2,1);
+	  explode(69,135);
+	  break;}
+	else
+	 {killing(f1,2,1);
+	 continue;} }
+
+     if(dist1g>=0 && dist1g<=16)
+       {
+	if(g1==0)
+	 {g1++;
+	  s.score_counter(g1);
+	  bullets++;
+	  s.score_counter(g1);
+	  killing(g1,2,0);
+	  explode(19,135);
+	  break;}
+	else
+	 {killing(g1,2,0);
+	 continue;} }
+
+      if(dist1h>=0 && dist1h<=16)
+      {
+       if(h1==0)
+	{h1++;
+	bullets++;
+	s.score_counter(h1);
+	killing(h1,1,6);
+	explode(319,85);
+	break;}
+       else
+	{killing(h1,1,6);
+	continue;} }
+
+       if(dist1i>=0 && dist1i<=16)
+      {
+       if(i1==0)
+	{i1++;
+	bullets++;
+	s.score_counter(i1);
+	killing(i1,1,5);
+	explode(269,85);
+	break;}
+       else
+	{killing(i1,1,5);
+	continue;} }
+
+      if(dist1j>=0 && dist1j<=16)
+      {
+       if(j1==0)
+	{j1++;
+	bullets++;
+	s.score_counter(j1);
+	killing(j1,1,4);
+	explode(219,85);
+	break;}
+       else
+	{killing(j1,1,4);
+	continue;} }
+
+      if(dist1k>=0 && dist1k<=16)
+      {
+       if(k1==0)
+	{k1++;
+	bullets++;
+	s.score_counter(k1);
+	killing(k1,1,3);
+	explode(169,85);
+	break;}
+       else
+	{killing(k1,1,3);
+	continue;} }
+
+      if(dist1l>=0 && dist1l<=16)
+      {
+       if(l1==0)
+	{l1++;
+	bullets++;
+	s.score_counter(l1);
+	killing(l1,1,2);
+	explode(119,85);
+	break;}
+       else
+	{killing(l1,1,2);
+	continue;} }
+
+      if(dist1m>=0 && dist1m<=16)
+      {
+       if(m1==0)
+	{m1++;
+	bullets++;
+	s.score_counter(m1);
+	killing(m1,1,1);
+	explode(69,85);
+	break;}
+       else
+	{killing(m1,1,1);
+	continue;} }
+
+       if(dist1n>=0 && dist1n<=16)
+      {
+       if(n1==0)
+	{n1++;
+	bullets++;
+	s.score_counter(n1);
+	killing(n1,1,0);
+	explode(19,85);
+	break;}
+       else
+	{killing(n1,1,0);
+	continue;} }
+
+       if(dist1o>=0 && dist1o<=16)
+      {
+       if(o1==0)
+	{o1++;
+	bullets++;
+	s.score_counter(o1);
+	killing(o1,0,6);
+	explode(319,35);
+	break;}
+       else
+	{killing(o1,0,6);
+	continue;} }
+
+       if(dist1p>=0 && dist1p<=16)
+      {
+       if(p1==0)
+	{p1++;
+	bullets++;
+	s.score_counter(p1);
+	killing(p1,0,5);
+	explode(269,35);
+	break;}
+       else
+	{killing(p1,0,5);
+	continue;} }
+
+      if(dist1q>=0 && dist1q<=16)
+      {
+       if(q1==0)
+	{q1++;
+	bullets++;
+	s.score_counter(q1);
+	killing(q1,0,4);
+	explode(219,35);
+	break;}
+       else
+	{killing(q1,0,4);
+	continue;} }
+
+      if(dist1r>=0 && dist1r<=16)
+      {
+       if(r1==0)
+	{r1++;
+	bullets++;
+	s.score_counter(r1);
+	killing(r1,0,3);
+	explode(169,35);
+	break;}
+       else
+	{killing(r1,0,3);
+	continue;} }
+
+      if(dist1s>=0 && dist1s<=16)
+      {
+       if(s1==0)
+	{s1++;
+	bullets++;
+	s.score_counter(s1);
+	killing(s1,0,2);
+	explode(119,35);
+	break;}
+       else
+	{killing(s1,0,2);
+	continue;} }
+
+      if(dist1t>=0 && dist1t<=16)
+      {
+       if(t1==0)
+	{t1++;
+	bullets++;
+	s.score_counter(t1);
+	killing(t1,0,1);
+	explode(69,35);
+	break;}
+       else
+	{killing(t1,0,1);
+	continue;} }
+
+     if(dist1u>=0 && dist1u<=16)
+      {
+       if(u1==0)
+	{u1++;
+	bullets++;
+	s.score_counter(u1);
+	killing(u1,0,0);
+	explode(19,35);
+	break;}
+       else
+	{killing(u1,0,0);
+	continue;} }
+
+      if(dist1v>=0 && dist1v<=16)
+      {
+       if(v1==0)
+	{v1++;
+	bullets++;
+	s.score_counter(v1);
+	killing(v1,0,7);
+	explode(371,30);
+	break;}
+       else
+	{killing(u1,0,7);
+	continue;} }
+
+      if(dist1w>=0 && dist1w<=16)
+      {
+       if(w1==0)
+	{w1++;
+	bullets++;
+	s.score_counter(w1);
+	killing(w1,0,8);
+	explode(421,30);
+	break;}
+       else
+	{killing(w1,0,8);
+	continue;} }
+
+
+
+      if(dist1z>=0 && dist1z<=16)
+      {
+       if(z1==0)
+	{z1++;
+	bullets++;
+	s.score_counter(z1);
+	killing(z1,1,7);
+	explode(371,80);
+	break;}
+       else
+	{killing(z1,1,7);
+	continue;} }
+
+      if(dist11a>=0 && dist11a<=16)
+      {
+       if(a11==0)
+	{a11++;
+	bullets++;
+	s.score_counter(a11);
+	killing(a11,1,8);
+	explode(421,80);
+	break;}
+       else
+	{killing(a11,1,8);
+	continue;} }
+
+      if(dist11e>=0 && dist11e<=16)
+      {
+       if(e11==0)
+	{e11++;
+	bullets++;
+	s.score_counter(e11);
+	killing(e11,2,8);
+	explode(421,130);
+	break;}
+       else
+	{killing(e11,2,8);
+	continue;} }
+
+      if(dist11d>=0 && dist11d<=16)
+      {
+       if(d11==0)
+	{d11++;
+	bullets++;
+	s.score_counter(d11);
+	killing(d11,2,7);
+	explode(371,130);
+	break;}
+       else
+	{killing(d11,2,7);
+	continue;} }
+  }
+}
+
+
+//Instructions
+void instruction()
+{
+ cleardevice();
+ setfillstyle(1,BLACK);
+ floodfill(1,1,BLACK);
+ setlinestyle(0,5,3);
+ setcolor(BLUE);
+ ellipse(320,240,0,360,350,250);
+ setlinestyle(1,0,1);
+ setcolor(MAGENTA);
+ ellipse(320,240,0,360,298,198);
+ setcolor(BLUE);
+ ellipse(320,240,0,360,294,194);
+ setcolor(LIGHTMAGENTA);
+ ellipse(320,240,0,360,292,192);
+ setcolor(RED);
+ setfillstyle(2,BLUE);
+ floodfill(1,1,BLUE);
+ floodfill(1,470,BLUE);
+ floodfill(630,3,BLUE);
+ floodfill(630,470,BLUE);
+ settextstyle(5, 0, 5);
+ outtextxy(230,45, "Instructions");
+ settextstyle(3, 0, 1);
+ outtextxy(73,140,"Use Left, Right Arrow keys to navigate your aircraft &");
+ outtextxy(85,160,"use Space Bar to shoot the bullets from your aircraft.");
+ outtextxy(110,180,"Be Carefull! You will have only 30 bullets to shoot.");
+ outtextxy(90,200,"The main objective of this game is that how fast you");
+ outtextxy(70,220,"are able to shoot the enemies. The one who hits ALL the");
+ outtextxy(50,240,"enemies in LEAST time will get the lead in the Highscore Board.");
+ setcolor(YELLOW);
+ outtextxy(260,270,"Best of Luck!!!!!");
+ setcolor(RED);
+ settextstyle(5,0,2);
+ ellipse(320,355,0,360,100,16);
+ outtextxy(255,335, "1. Back to Menu");
+ setfillstyle(10,BLUE);
+ floodfill(318,350,RED);
+ ellipse(320,400,0,360,100,16);
+ outtextxy(255, 380, "2. Start Game");
+ setfillstyle(10,BLUE);
+ floodfill(240,401,RED);
+
+}
+
+//Credits
+void credits()
+{
+ cleardevice();
+settextstyle(4,HORIZ_DIR,6);
+setcolor(6);
+outtextxy(midx-100,20,"CREDITS");
+setcolor(2);
+settextstyle(5,HORIZ_DIR,3);
+outtextxy(10,100,"Made By: ");
+setcolor(3);
+settextstyle(7,HORIZ_DIR,3);
+outtextxy(20,130,"Chintan Joshi");
+outtextxy(20,160,"XII - C");
+outtextxy(20,190,"Roll No.: 11");
+settextstyle(5,HORIZ_DIR,3);
+setcolor(4);
+outtextxy(10,230,"Special Thanks to...");
+settextstyle(7,HORIZ_DIR,3);
+setcolor(6);
+outtextxy(20,260,"Smriti Mam");
+settextstyle(3,HORIZ_DIR,3);
+setcolor(14);
+outtextxy(20,300,"Yash Pathak");
+setcolor(9);
+outtextxy(20,330,"Ayush Pathak");
+outtextxy(20,360,"Darwin Patel");
+outtextxy(20,390,"Ankush Singh");
+settextstyle(11,HORIZ_DIR,2);
+setcolor(10);
+outtextxy(midx+100,midy+150,"Press 1 to go back OR");
+outtextxy(midx+100,midy+180,"Press 2 to Start Game: ");
+}
+
+//Display of Grey Bar side bar in the Game
+void sidebar()
+{
+ setfillstyle(1,8);
+ bar(450,0,639,479);
+ setfillstyle(1,0);
+ bar(490,100,600,430);
+ settextstyle(10,HORIZ_DIR,3);
+ outtextxy(500,100,"Time: ");
+ settextstyle(11,HORIZ_DIR,1);
+ outtextxy(500,300,"Bullets");
+ outtextxy(500,320,"Remaining: ");
+ if(shoot1==50)
+		{itoa(shoot1,str,10);
+		 setcolor(15);
+		 outtextxy(530,340,str);}
+}
+
+
+void mainmenu(int midx1,int midy1)
+{
+if(c12>=1)
+{
+ shoot1=30;        //REGAIN AMMO
+ a1=b1=c1=d1=e1=f1=g1=h1=i1=j1=k1=l1=m1=n1=o1=p1=q1=r1=s1=t1=u1=w1=z1=a11=d11=e11=0; //REGAIN ENEMIES
+}
+again1:
+clrscr();
+cleardevice();
+
+setcolor(9);
+setfillstyle(1,9);
+
+for(int i=0;i<405;i+=5)
+{
+ pieslice(midx1,midy1,0,360,i);
+}
+
+
+delay(50);
+setcolor(15);
+moveto(180,50);
+
+settextstyle(3,HORIZ_DIR,7);
+outtext("MAIN MENU");
+
+delay(50);
+setcolor(14);
+moveto(200,200);
+settextstyle(7,HORIZ_DIR,2);
+outtext("1. PLAY GAME");
+
+delay(50);
+moveto(200,250);
+settextstyle(7,HORIZ_DIR,2);
+outtext("2. INSTRUCTIONS");
+
+delay(50);
+moveto(200,300);
+settextstyle(7,HORIZ_DIR,2);
+outtext("3. CREDITS");
+
+delay(50);
+moveto(200,350);
+settextstyle(7,HORIZ_DIR,2);
+outtext("4. HIGH SCORE");
+
+
+delay(50);
+moveto(200,400);
+settextstyle(7,HORIZ_DIR,2);
+outtext("5. EXIT");
+
+again2:
+key=bioskey(0);
+
+if(key==20273||key==561)
+{c12++;
+ timer1();
+}
+
+if(key==818||key==20530)
+ {instruction();
+  cin>>ff1;
+  if(ff1==1)
+   {goto again1;}
+  else if(ff1==2)
+   {setfillstyle(1,BLACK);
+   c12++;
+   timer1();
+   }
+  }
+
+if(key==20787||key==1075)
+ {credits();
+  cin>>ff;
+  if(ff==1)
+   {goto again1;}
+  else if(ff==2)
+   {setfillstyle(1,BLACK);
+   c12++;
+   timer1();
+   }
+  }
+
+if(key==1332||key==19252)
+{
+ high_score();
+ cin>>ff2;
+ if(ff2==1)
+ {goto again1;}
+  else if(ff2==2)
+   {setfillstyle(1,BLACK);
+    c12++;
+    timer1();
+   }
+  }
+if(key==19509||key==1589||key==283)
+ {exit(0);}
+
+else
+ {goto again2;}
+
+
+}
+
+void high_score()
+{
+cleardevice();
+settextstyle(4,HORIZ_DIR,6);
+setcolor(6);
+outtextxy(midx-150,20,"HIGH SCORES");
+settextstyle(11,HORIZ_DIR,2);
+
+ifstream if1("SCORE1.txt", ios::beg);
+int pos1=0;
+while(!if1.eof()) {
+   if1.read((char*)&sp,sizeof(sp));
+   sp.display(pos1);
+   pos1++;
+}
+
+setcolor(10);
+outtextxy(midx+100,midy+150,"Press 1 to go back OR");
+outtextxy(midx+100,midy+180,"Press 2 to Start Game: ");
+}
+
+
+void gameover(int cc1)
+{
+for(int i=0;i<700;i+=10)
+{
+ setcolor(4);
+ setfillstyle(1,4);
+ pieslice(300,c,0,360,15+i);
+}
+floodfill(1,1,1);
+settextstyle(10,HORIZ_DIR,2);
+setcolor(14);
+outtextxy(200,200,"GAME OVER!");
+delay(4000);
+exit(0);
+}
+
+
+int Exit()
+{
+cleardevice();
+setcolor(LIGHTMAGENTA);
+ellipse(320,240,0,360,350,270);
+setcolor(RED);
+ellipse(320,240,0,360,360,280);
+setfillstyle(11,MAGENTA);
+floodfill(10,10,RED);
+floodfill(10,420,RED);
+floodfill(620,10,RED);
+floodfill(620,420,RED);
+
+setcolor(BLUE);
+ellipse(320,240,0,360,180,90);
+delay(800);
+setcolor(MAGENTA);
+ellipse(320,240,0,360,178,88);
+delay(200);
+setcolor(BLUE);
+ellipse(320,240,0,360,176,86);
+delay(200);
+setlinestyle(3,1,3);
+setcolor(MAGENTA);
+ellipse(320,240,0,360,174,84);
+ellipse(320,240,0,360,180,150);
+settextstyle(3,0,2);
+outtextxy(163,230,"R u sure u wanna exit (y/n): ");
+gotoxy(58,16);
+char ch;
+cin>>ch;
+return ch;
+}
+
+
+
+
+void intro()
+{
+ midx = getmaxx() / 2 ;
+ midy = getmaxy() / 2 ;
+ ymax = getmaxy();
+
+ for(i=0;i<650;i+=20)
+ {
+  delay(80);
+  setcolor(BLUE);
+  line(midx,0,i,midy-40);
+  line(midx,ymax,i,midy+40);
+  settextstyle(10,HORIZ_DIR,6);
+  setcolor(MAGENTA);
+  outtextxy(i-645,midy-70,"Space  Invaders");
+  setcolor(BLACK);
+  outtextxy(i-665,midy-70,"Space  Invaders");
+ }
+ setcolor(RED);
+ settextstyle(5,0,3);
+ outtextxy(midx+36,midy+170,"Press any key to continue....");
+ getch();
+}
+
+void loading()
+{
+cleardevice();
+  setcolor(13);
+  settextstyle(TRIPLEX_FONT,HORIZ_DIR,0);
+  setusercharsize(2, 1, 1, 1);
+  outtextxy(138,200,"LOADING");              //LOADING
+  setcolor(13);
+settextstyle(TRIPLEX_FONT,HORIZ_DIR,0);
+setusercharsize(2, 1, 1, 1);
+
+setcolor(BLUE);
+rectangle(119,199,421,231);
+rectangle(118,198,422,232);
+setcolor(10);
+for(int ii=120;ii<=420;ii++)
+{
+line(ii,200,ii,230);
+sound(ii+1500);
+delay(10);
+nosound();
+}
+settextstyle(TRIPLEX_FONT,HORIZ_DIR,1);
+outtextxy(170,250,"LOADING COMPLETE! Press any key to continue");
+getch();
+}
+
+void game()
+{
+loading();
+clrscr();
+cleardevice();
+back();
+plane(midx-100,15);
+enemy();
+sidebar();
+
+time_t t;
+tt1=time(&t);
+
+tt1-=ttime1;
+
+for(j=0;;j++)
+{
+ again:
+ key=bioskey(0);
+ if(key==19712)
+ {
+  if(j==0)
+		 {c=midx-100;}
+		if(c>425)
+		 {goto again;}
+		r=c+10;
+		plane_right(c,r);
+		c=r;
+ }
+
+ if(key==19200)
+ {
+  if(j==0)
+		 {c=midx-100;}
+		if(c<20)
+		 {goto again;}
+		l=c-10;
+		plane_left(c,l);
+		c=l;
+ }
+
+ if(key==14624)
+ {
+  if(j==0)
+		{c=midx-100;}
+		sound(1000);
+		delay(10);
+		nosound();
+		shoot(c,midy);
+		shoot1--;
+		setfillstyle(1,0);
+		setcolor(0);
+		bar(530,340,550,347);
+		itoa(shoot1,str,10);
+		setcolor(15);
+		outtextxy(530,340,str);
+		if(shoot1==0)
+		 {settextstyle(2,HORIZ_DIR,6);
+		  setcolor(9);
+		  outtextxy(10,10,"You are out of AMMO! Now what will you do in front of enemy");
+		  outtextxy(10,25,"without ammo??! You better DIE! ");
+		  delay(2000);
+		  outtextxy(300,25,".");
+		  delay(500);
+		  outtextxy(310,25,".");
+		  delay(500);
+		  outtextxy(320,25,".");
+		  delay(500);
+		  gameover(c);}
+
+ }
+
+ else if(key==283)
+ {
+		 setfillstyle(1,0);
+		 setcolor(15);
+		 outtextxy(495,375,"Are sure u");
+		 outtextxy(495,390,"wanna exit?:");
+		 gotoxy(75,25);
+		 cin>>choice;
+		 if(choice=='y'||choice=='Y')
+		   exit(0);
+		 if(choice=='n'||choice=='N')
+		   setcolor(0);
+		   bar(490,370,600,420);
+ }
+
+
+ if(a1>=1 && b1>=1 && c1>=1 && d1>=1 && e1>=1 && f1>=1 && g1>=1 && h1>=1 && i1>=1 && j1>=1 && k1>=1 && l1>=1 && m1>=1 && n1>=1 && o1>=1 && p1>=1 && q1>=1 && r1>=1 && s1>=1 && t1>=1 && u1>=1 && v1>=1 && w1>=1 && z1>=1 && a11>=1 && d11>=1 && e11>=1)
+ {
+ setcolor(15);
+ settextstyle(10,HORIZ_DIR,3);
+ outtextxy(70,250,"Target Successfully");
+ outtextxy(70,300,"Destroyed!");
+ delay(2000);
+ break;
+ }
+
+  while (!kbhit())
+   { t2=time(&t)-ttime2;
+     ttime=(t2-tt1);
+     timer.hr=(ttime/3600);
+     timer.min=(ttime%3600)/60;
+     timer.sec=((ttime%3600)%60);
+     gotoxy (65,15);
+     cout<<timer.hr<<":"<<timer.min<<":"<<timer.sec; }
+
+
+}
+
+}
+
+void timer1()
+{ char x;
+  int N,c,s;
+  clock_t Begin, End,Dura;    //initialize Begin and End for the timer
+  Begin = clock() ;      //start the timer
+  game();
+  End = clock() ;        //stop the timer
+  Dura=(End-Begin)/CLK_TCK;
+
+  delay(50);
+  getch();
+  cleardevice();
+  if(Dura>30)
+  {
+    settextstyle(0,0,2);
+    setfillstyle(1,0);
+    setcolor(4);
+    bar3d(midx-200,midy-100,midx+200,midy+100,1,1);
+    setcolor(2);
+    cout<<"\nTIME TAKEN:-"<<Dura<<" sec"<<'\n';
+    outtextxy(midx-150,midy-80,"You take lots of time!");
+    outtextxy(midx-140,midy-60,"Try again next time");
+    sp1.score_counter(0);
+    score_write();
+    exit(0);
+  }
+ else
+  {   cout<<"\nTIME TAKEN:-"<<Dura<<" sec"<<'\n';
+      settextstyle(0,0,2);
+      setfillstyle(1,0);
+      setcolor(4);
+      bar3d(midx-200,midy-80,midx+200,midy+120,1,1);
+      setcolor(2);
+      outtextxy(midx-50,midy-40,"GOOD!");
+      score_write();
+      mainmenu(midx,midy);
+  }
+
+
+}
+
+
+void main()
+{
+clrscr();
+/* request auto detection */
+int gdriver = DETECT, gmode, errorcode;
+
+/* initialize graphics and local variables */
+initgraph(&gdriver, &gmode, "..\\BGI");
+
+/* read result of initialization */
+errorcode = graphresult();
+/* an error occurred */
+if (errorcode != grOk)
+ {
+  cout<<"Graphics error: \n"<< grapherrormsg(errorcode);
+  cout<<"Press any key to halt:";
+  getch();
+ }
+
+ midx = getmaxx() / 2 ;
+ midy = getmaxy() / 2 ;
+
+ maxx=getmaxx();
+ maxy=getmaxy();
+
+int x=0,key=0,lx=0,ly=0;
+
+intro();
+mainmenu(midx,midy);
+
+
+getch();
+
+}
